@@ -3,7 +3,9 @@ const livros = require('../models/Livro');
 class LivroController{
 
     static listarLivros = (req, res) => {
-        livros.find((erro, livros) =>{
+        livros.find()
+        .populate('autor')
+        .exec((erro, livros) =>{
 
             if(erro){
                 res.status(201).send({message: `${erro.message} - Erro na consulta`})
@@ -19,7 +21,9 @@ class LivroController{
     static listarLivroPorId = (req, res) => {
         const id = req.params.id;
 
-        livros.findById(id, (erro, livros) => {
+        livros.findById(id)
+        .populate('autor', 'nome')
+        .exec((erro, livros) => {
             if(erro){
                 res.status(400).send({message: `${erro.message} - Livro não localizado`})
             }else{
@@ -66,6 +70,14 @@ class LivroController{
             }
         })
        
+    }
+
+    static listarLivroPorEditora = (req, res) => {
+        const editora = req.query.editora
+        
+        livros.find({'editora' : editora}, {}, (err, livros) =>{
+            res.status(200).send(livros);
+        })
     }
 
 }
